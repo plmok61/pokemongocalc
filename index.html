@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+  </head>
+  <body>
+    <h1>Pokemon GO Calculator</h1>
+    <h3>What is your Pokemon?</h3>
+    <select name="pokemonList" id="inputName">
+      <option value="Bulbasaur">Bulbasaur</option>
+      <option value="Ivysaur">Ivysaur</option>
+      <option value="Charmander">Charmander</option>
+      <option value="Charmeleon">Charmeleon</option>
+    </select>
+    <h3>What is its current CP</h3>
+    <input id="currentCPInput" type="number">
+    <div>
+      <button onclick="handlers.calcEvolution()">Calculate</button>
+    </div>
+    <div class="evolvedCP">
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
