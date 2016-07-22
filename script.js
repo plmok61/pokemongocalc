@@ -27,19 +27,39 @@ var handlers = {
     var inputName = document.getElementById('inputName')
     var pkm = lookUpPokemon(inputName.value, pokemonArray);
     var evoMultiplier = pkm.evoMultiplier;
+    var pkmName = pkm.name;
+    var pkmEvolvesToName = pkm.evolvesTo
     pokemonCalculators.calcEvolution(evoMultiplier, currentCP.valueAsNumber);
-    console.log(pokemonCalculators.calcCPArray[0]);
-    view.displayCalcCP();
+    var pkmEvolvesToCP = pokemonCalculators.calcCPArray[0];
+    view.displayCalcCP(pkmName, pkmEvolvesToName);
+
+    if (lookUpPokemon(pkmEvolvesToName, pokemonArray) != undefined) {
+      var pkm2 = lookUpPokemon(pkmEvolvesToName, pokemonArray);
+      var evoMultiplier2 = pkm2.evoMultiplier;
+      var pkmName2 = pkm2.name;
+      var pkmEvolvesToName2 = pkm2.evolvesTo
+      pokemonCalculators.calcEvolution(evoMultiplier2, pkmEvolvesToCP);
+      view.displayFinalCP(pkmName2, pkmEvolvesToName2);
+    }
   }
 };
 
 var view = {
-  displayCalcCP: function() {
+  displayCalcCP: function(pkmName, pkmEvolvesToName) {
     var evolvedCP = document.querySelector('.evolvedCP');
     evolvedCP.innerHTML = '';
     var newCPDiv = document.createElement('div');
-    newCPDiv.textContent = pokemonCalculators.calcCPArray[0];
+    newCPDiv.textContent = 'Your ' + pkmName + ' will evolve to a ~' + Math.round(pokemonCalculators.calcCPArray[0]) + ' ' + pkmEvolvesToName + '.';
     evolvedCP.appendChild(newCPDiv);
+    pokemonCalculators.calcCPArray.pop();
+  },
+  displayFinalCP: function(pkmName2, pkmEvolvesToName2) {
+    var finalCP = document.querySelector('.finalCP');
+    finalCP.innerHTML = '';
+    var finalCPDiv = document.createElement('div');
+    finalCPDiv.textContent = 'Then ' + pkmName2 + ' will evolve into a ~' + Math.round(pokemonCalculators.calcCPArray[0]) + ' ' + pkmEvolvesToName2 + '.';
+    finalCP.appendChild(finalCPDiv);
+    pokemonCalculators.calcCPArray.pop();
   }
 };
 
