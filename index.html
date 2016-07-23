@@ -5,25 +5,93 @@
     <script src="script.js"></script>
   </head>
   <body>
-    <h1>Pokemon GO Calculator</h1>
-    <h3>What is your Pokemon?</h3>
-    <select name="pokemonList" id="inputName">
-      <option value="Bulbasaur">Bulbasaur</option>
-      <option value="Ivysaur">Ivysaur</option>
-      <option value="Charmander">Charmander</option>
-      <option value="Charmeleon">Charmeleon</option>
-    </select>
-    <h3>What is its current CP</h3>
-    <input id="currentCPInput" type="number">
-    <div>
-      <button onclick="handlers.calcEvolution()">Calculate</button>
+    <div class="body-wrap">
+      <h1>Pokemon GO Calculator</h1>
+      <h3>What is your Pokemon?</h3>
+      <select name="pokemonList" id="inputName">
+        <option value="Bulbasaur">Bulbasaur</option>
+        <option value="Ivysaur">Ivysaur</option>
+        <option value="Charmander">Charmander</option>
+        <option value="Charmeleon">Charmeleon</option>
+        <option value="Squirtle">Squirtle</option>
+        <option value="Wartortle">Wartortle</option>
+        <option value="Caterpie">Caterpie</option>
+        <option value="Metapod">Metapod</option>
+        <option value="Weedle">Weedle</option>
+        <option value="Kakuna">Kakuna</option>
+        <option value="Pigey">Pigey</option>
+        <option value="Pigeotto">Pigeotto</option>
+        <option value="Rattata">Rattata</option>
+        <option value="Spearow">Spearow</option>
+        <option value="Ekans">Ekans</option>
+        <option value="Pikachu">Pikachu</option>
+        <option value="Sandshrew">Sandshrew</option>
+        <option value="Nidoran F">Nidoran F</option>
+        <option value="Nidorina">Nidorina</option>
+        <option value="Nidoran M">Nidoran M</option>
+        <option value="Nidorino">Nidorino</option>
+        <option value="Clefairy">Clefairy</option>
+        <option value="Vulpix">Vulpix</option>
+        <option value="Jigglypuff">Jigglypuff</option>
+        <option value="Zubat">Zubat</option>
+        <option value="Oddish">Oddish</option>
+        <option value="Gloom">Gloom</option>
+        <option value="Paras">Paras</option>
+        <option value="Venonat">Venonat</option>
+        <option value="Diglett">Diglett</option>
+        <option value="Meowth">Meowth</option>
+        <option value="Psyduck">Psyduck</option>
+        <option value="Mankey">	Mankey</option>
+        <option value="Growlithe">Growlithe</option>
+        <option value="Poliwag">Poliwag</option>
+        <option value="Poliwhirl">Poliwhirl</option>
+        <option value="Abra">Abra</option>
+        <option value="Kadabra">Kadabra</option>
+        <option value="Machop">Machop</option>
+        <option value="Machoke">Machoke</option>
+        <option value="Bellspout">Bellspout</option>
+        <option value="Weepinbell">Weepinbell</option>
+        <option value="Tentacool">Tentacool</option>
+        <option value="Geodude">Geodude</option>
+        <option value="Graveler">Graveler</option>
+        <option value="Ponyta">Ponyta</option>
+        <option value="Slowpoke">Slowpoke</option>
+        <option value="Magnemite">Magnemite</option>
+        <option value="Doduo">Doduo</option>
+        <option value="Seel">Seel</option>
+        <option value="Grimer">Grimer</option>
+        <option value="Shellder">Shellder</option>
+        <option value="Gastly">Gastly</option>
+        <option value="Haunter">Haunter</option>
+        <option value="Drowzee">Drowzee</option>
+        <option value="Krabby">Krabby</option>
+        <option value="Voltorb">Voltorb</option>
+        <option value="Exeggcute">Exeggcute</option>
+        <option value="Cubone">Cubone</option>
+        <option value="Koffing">Koffing</option>
+        <option value="Rhyhorn">Rhyhorn</option>
+        <option value="Horsea">Horsea</option>
+        <option value="Goldeen">Goldeen</option>
+        <option value="Staryu">Staryu</option>
+        <option value="Magikarp">Magikarp</option>
+        <option value="Eevee">Eevee</option>
+        <option value="Omanyte">Omanyte</option>
+        <option value="Kabuto">Kabuto</option>
+        <option value="Dratini">Dratini</option>
+        <option value="Dragonair">Dragonair</option>
+      </select>
+      <h3>What is its current CP</h3>
+      <input id="currentCPInput" type="number">
+      <div>
+        <button onclick="handlers.calcEvolution()">Calculate</button>
+      </div>
+      <div class="calcResults">
+        <div class="evolvedCP">
+        </div>
+        <div class="finalCP">
+        </div>
+      </div>
     </div>
-
-      <div class="evolvedCP">
-      </div>
-      <div class="finalCP">
-      </div>
-
     <script src="script.js"></script>
   </body>
 </html>

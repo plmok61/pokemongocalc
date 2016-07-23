@@ -33,6 +33,8 @@ var handlers = {
     var pkmEvolvesToCP = pokemonCalculators.calcCPArray[0];
     view.displayCalcCP(pkmName, pkmEvolvesToName);
 
+    //If the Pokemon is the first in an evolution line of 3,
+    //look up the 3 form also.
     if (lookUpPokemon(pkmEvolvesToName, pokemonArray) != undefined) {
       var pkm2 = lookUpPokemon(pkmEvolvesToName, pokemonArray);
       var evoMultiplier2 = pkm2.evoMultiplier;
@@ -47,6 +49,8 @@ var handlers = {
 var view = {
   displayCalcCP: function(pkmName, pkmEvolvesToName) {
     var evolvedCP = document.querySelector('.evolvedCP');
+    var finalCP = document.querySelector('.finalCP');
+    finalCP.textContent = '';
     evolvedCP.innerHTML = '';
     var newCPDiv = document.createElement('div');
     newCPDiv.textContent = 'Your ' + pkmName + ' will evolve to a ~' + Math.round(pokemonCalculators.calcCPArray[0]) + ' ' + pkmEvolvesToName + '.';
