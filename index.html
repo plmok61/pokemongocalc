@@ -81,7 +81,7 @@
         <option value="Dragonair">Dragonair</option>
       </select>
       <h3>What is its current CP</h3>
-      <input id="currentCPInput" type="number">
+      <input id="currentCPInput" type="number" onkeypress=if(event.keyCode==13)handlers.calcEvolution()>
       <div>
         <button onclick="handlers.calcEvolution()">Calculate</button>
       </div>
