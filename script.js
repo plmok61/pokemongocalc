@@ -33,7 +33,6 @@ var handlers = {
     var pkm = lookUpPokemon(inputName.value, pokemonArray);
 
     //Check to see if the Pokemon is Eevee
-    debugger;
     if (pkm.name === "Eevee") {
       for(var i = 0; i < 3; i ++){
         var evoMultiplierL = pkm.evoMultiplierL[i];
