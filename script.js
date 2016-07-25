@@ -1,8 +1,14 @@
 var pokemonCalculators = {
   calcCPArray: [],
-  calcEvolution: function(evoMultiplier, currentCP) {
-    var result = evoMultiplier * currentCP;
-    this.calcCPArray.push(result);
+  calcEvolution: function(evoMultiplierL, evoMultiplierH, currentCP) {
+    var resultL = Math.round(evoMultiplierL * currentCP);
+    var resultH = Math.round(evoMultiplierH * currentCP);
+    this.calcCPArray.push(resultL, resultH);
+  },
+  calcEvolution2: function(evoMultiplierL, evoMultiplierH, pkmEvolvesToCPL, pkmEvolvesToCPH) {
+    var resultL = evoMultiplierL * pkmEvolvesToCPL;
+    var resultH = evoMultiplierH * pkmEvolvesToCPH;
+    this.calcCPArray.push(resultL, resultH);
   }
 };
 
@@ -13,7 +19,6 @@ function lookUpPokemon(inputName, pokemonArray) {
 //      return pkm;
 //    }
 //  });
-
   for(var i = 0; i < pokemonArray.length; i++) {
     if (pokemonArray[i].name === inputName) {
       return pokemonArray[i];
@@ -26,22 +31,45 @@ var handlers = {
     var currentCP = document.getElementById('currentCPInput');
     var inputName = document.getElementById('inputName')
     var pkm = lookUpPokemon(inputName.value, pokemonArray);
-    var evoMultiplier = pkm.evoMultiplier;
-    var pkmName = pkm.name;
-    var pkmEvolvesToName = pkm.evolvesTo
-    pokemonCalculators.calcEvolution(evoMultiplier, currentCP.valueAsNumber);
-    var pkmEvolvesToCP = pokemonCalculators.calcCPArray[0];
-    view.displayCalcCP(pkmName, pkmEvolvesToName);
 
-    //If the Pokemon is the first in an evolution line of 3,
-    //look up the 3 form also.
-    if (lookUpPokemon(pkmEvolvesToName, pokemonArray) != undefined) {
-      var pkm2 = lookUpPokemon(pkmEvolvesToName, pokemonArray);
-      var evoMultiplier2 = pkm2.evoMultiplier;
-      var pkmName2 = pkm2.name;
-      var pkmEvolvesToName2 = pkm2.evolvesTo
-      pokemonCalculators.calcEvolution(evoMultiplier2, pkmEvolvesToCP);
-      view.displayFinalCP(pkmName2, pkmEvolvesToName2);
+    //Check to see if the Pokemon is Eevee
+    debugger;
+    if (pkm.name === "Eevee") {
+      for(var i = 0; i < 3; i ++){
+        var evoMultiplierL = pkm.evoMultiplierL[i];
+        var evoMultiplierH = pkm.evoMultiplierH[i];
+        var pkmEvolvesToName = pkm.evolvesTo[i];
+        pokemonCalculators.calcEvolution(evoMultiplierL, evoMultiplierH, currentCP.valueAsNumber);
+      };
+      var vaporeon = [];
+      var jolteon = [];
+      var flareon = [];
+      vaporeon.push(pokemonCalculators.calcCPArray[0], pokemonCalculators.calcCPArray[1]);
+      jolteon.push(pokemonCalculators.calcCPArray[2], pokemonCalculators.calcCPArray[3]);
+      flareon.push(pokemonCalculators.calcCPArray[4], pokemonCalculators.calcCPArray[5]);
+      view.displayEeveelutionsCP(vaporeon, jolteon, flareon);
+    } else {
+
+      var evoMultiplierL = pkm.evoMultiplierL;
+      var evoMultiplierH = pkm.evoMultiplierH;
+      var pkmName = pkm.name;
+      var pkmEvolvesToName = pkm.evolvesTo
+      pokemonCalculators.calcEvolution(evoMultiplierL, evoMultiplierH, currentCP.valueAsNumber);
+      var pkmEvolvesToCPL = pokemonCalculators.calcCPArray[0];
+      var pkmEvolvesToCPH = pokemonCalculators.calcCPArray[1];
+      view.displayCalcCP(pkmName, pkmEvolvesToName);
+
+      //If the Pokemon is the first in an evolution line of 3,
+      //look up the 3 form also.
+      if (lookUpPokemon(pkmEvolvesToName, pokemonArray) != undefined) {
+        var pkm2 = lookUpPokemon(pkmEvolvesToName, pokemonArray);
+        var evoMultiplierL2 = pkm2.evoMultiplierL;
+        var evoMultiplierH2 = pkm2.evoMultiplierH;
+        var pkmName2 = pkm2.name;
+        var pkmEvolvesToName2 = pkm2.evolvesTo
+        pokemonCalculators.calcEvolution2(evoMultiplierL2, evoMultiplierH2, pkmEvolvesToCPL, pkmEvolvesToCPH);
+        view.displayFinalCP(pkmName2, pkmEvolvesToName2);
+      }
     }
   }
 };
@@ -53,19 +81,474 @@ var view = {
     finalCP.textContent = '';
     evolvedCP.innerHTML = '';
     var newCPDiv = document.createElement('div');
-    newCPDiv.textContent = 'Your ' + pkmName + ' will evolve to a ~' + Math.round(pokemonCalculators.calcCPArray[0]) + ' ' + pkmEvolvesToName + '.';
+    newCPDiv.textContent = 'Your '+ pkmName + ' will evolve to a ' + pkmEvolvesToName + ' with ' + pokemonCalculators.calcCPArray[0] + ' to ' + pokemonCalculators.calcCPArray[1] + ' CP.';
     evolvedCP.appendChild(newCPDiv);
-    pokemonCalculators.calcCPArray.pop();
+    pokemonCalculators.calcCPArray.length = 0;
   },
   displayFinalCP: function(pkmName2, pkmEvolvesToName2) {
     var finalCP = document.querySelector('.finalCP');
     finalCP.innerHTML = '';
     var finalCPDiv = document.createElement('div');
-    finalCPDiv.textContent = 'Then ' + pkmName2 + ' will evolve into a ~' + Math.round(pokemonCalculators.calcCPArray[0]) + ' ' + pkmEvolvesToName2 + '.';
+    finalCPDiv.textContent = 'Then ' + pkmName2 + ' will evovle to a ' + pkmEvolvesToName2 + ' with ' + pokemonCalculators.calcCPArray[0] + ' to ' + pokemonCalculators.calcCPArray[1] + ' CP.';
     finalCP.appendChild(finalCPDiv);
-    pokemonCalculators.calcCPArray.pop();
+    pokemonCalculators.calcCPArray.length = 0;
+  },
+  displayEeveelutionsCP: function(vaporeon, jolteon, flareon) {
+    var evolvedCP = document.querySelector('.evolvedCP');
+    evolvedCP.innerHTML = '';
+    var vaporeonDiv = document.createElement('div');
+    var jolteonDiv = document.createElement('div');
+    var flareonDiv = document.createElement('div');
+    vaporeonDiv.textContent = 'Your Eevee will evolve to a Vaporeon with ' + vaporeon[0] + ' to ' + vaporeon[1] + ' CP.'
+    jolteonDiv.textContent = 'Your Eevee will evolve to a Jolteon with ' + jolteon[0] + ' to ' + jolteon[1] + ' CP.'
+    flareonDiv.textContent = 'Your Eevee will evolve to a Flareon with ' + flareon[0] + ' to ' + flareon[1] + ' CP.'
+    evolvedCP.appendChild(vaporeonDiv);
+    evolvedCP.appendChild(jolteonDiv);
+    evolvedCP.appendChild(flareonDiv);
+    pokemonCalculators.calcCPArray.length = 0;
   }
 };
+
+var pokemonArray = [
+  {
+    "name": "Bulbasaur",
+    "evoMultiplierL": 1.53,
+    "evoMultiplierH": 1.58,
+    "evolvesTo": "Ivysaur"
+  },
+  {
+    "name": "Ivysaur",
+    "evoMultiplierL": 1.2,
+    "evoMultiplierH": 1.6,
+    "evolvesTo": "Venusaur"
+  },
+  {
+    "name": "Charmander",
+    "evoMultiplierL": 1.64,
+    "evoMultiplierH": 1.7,
+    "evolvesTo": "Charmeleon"
+  },
+  {
+    "name": "Charmeleon",
+    "evoMultiplierL": 1.71,
+    "evoMultiplierH": 1.79,
+    "evolvesTo": "Charizard"
+  },
+  {
+    "name": "Squirtle",
+    "evoMultiplierL": 1.63,
+    "evoMultiplierH": 2.1,
+    "evolvesTo": "Wartortle"
+  },
+  {
+    "name": "Wartortle",
+    "evoMultiplierL": 1.4,
+    "evoMultiplierH": 1.65,
+    "evolvesTo": "Blastoise"
+  },
+  {
+    "name": "Caterpie",
+    "evoMultiplierL": 1.04,
+    "evoMultiplierH": 1.08,
+    "evolvesTo": "Metapod"
+  },
+  {
+    "name": "Metapod",
+    "evoMultiplierL": 3.55,
+    "evoMultiplierH": 3.79,
+    "evolvesTo": "Butterfree"
+  },
+  {
+    "name": "Weedle",
+    "evoMultiplierL": 1.06,
+    "evoMultiplierH": 1.1,
+    "evolvesTo": "Kakuna"
+  },
+  {
+    "name": "Kakuna",
+    "evoMultiplierL": 3.01,
+    "evoMultiplierH": 3.42,
+    "evolvesTo": "Beedrill"
+  },
+  {
+    "name": "Pidgey",
+    "evoMultiplierL": 1.71,
+    "evoMultiplierH": 1.95,
+    "evolvesTo": "Pigeotto"
+  },
+  {
+    "name": "Pidgeotto",
+    "evoMultiplierL": 1.73,
+    "evoMultiplierH": 1.78,
+    "evolvesTo": "Pigeot"
+  },
+  {
+    "name": "Rattata",
+    "evoMultiplierL": 2.55,
+    "evoMultiplierH": 2.73,
+    "evolvesTo": "Raticate"
+  },
+  {
+    "name": "Spearow",
+    "evoMultiplierL": 2.58,
+    "evoMultiplierH": 2.81,
+    "evolvesTo": "Fearow"
+  },
+  {
+    "name": "Ekans",
+    "evoMultiplierL": 2.21,
+    "evoMultiplierH": 2.27,
+    "evolvesTo": "Arbok"
+  },
+  {
+    "name": "Pikachu",
+    "evoMultiplierL": 2.33,
+    "evoMultiplierH": 2.38,
+    "evolvesTo": "Raichu"
+  },
+  {
+    "name": "Sandshrew",
+    "evoMultiplierL": 2.35,
+    "evoMultiplierH": 2.76,
+    "evolvesTo": "Sandslash"
+  },
+  {
+    "name": "Nidoran F",
+    "evoMultiplierL": 1.63,
+    "evoMultiplierH": 2.48,
+    "evolvesTo": "Nidorina"
+  },
+  {
+    "name": "Nidorina",
+    "evoMultiplierL": 1.83,
+    "evoMultiplierH": 2.48,
+    "evolvesTo": "Nidoqueen"
+  },
+  {
+    "name": "Nidoran M",
+    "evoMultiplierL": 1.64,
+    "evoMultiplierH": 1.7,
+    "evolvesTo": "Nidorino"
+  },
+  {
+    "name": "Nidorino",
+    "evoMultiplierL": 1.64,
+    "evoMultiplierH": 1.86,
+    "evolvesTo": "Nidoking"
+  },
+  {
+    "name": "Clefairy",
+    "evoMultiplierL": 2.03,
+    "evoMultiplierH": 2.14,
+    "evolvesTo": "Clefable"
+  },
+  {
+    "name": "Vulpix",
+    "evoMultiplierL": 2.74,
+    "evoMultiplierH": 2.81,
+    "evolvesTo": "Ninetails"
+  },
+  {
+    "name": "Jigglypuff",
+    "evoMultiplierL": 2.41,
+    "evoMultiplierH": 2.47,
+    "evolvesTo": "Wigglytuff"
+  },
+  {
+    "name": "Zubat",
+    "evoMultiplierL": 2.6,
+    "evoMultiplierH": 3.67,
+    "evolvesTo": "Golbat"
+  },
+  {
+    "name": "Oddish",
+    "evoMultiplierL": 1.48,
+    "evoMultiplierH": 1.51,
+    "evolvesTo": "Gloom"
+  },
+  {
+    "name": "Gloom",
+    "evoMultiplierL": 1.48,
+    "evoMultiplierH": 1.53,
+    "evolvesTo": "Vileplume"
+  },
+  {
+    "name": "Paras",
+    "evoMultiplierL": 1.92,
+    "evoMultiplierH": 2.02,
+    "evolvesTo": "Parasect"
+  },
+  {
+    "name": "Venonat",
+    "evoMultiplierL": 1.86,
+    "evoMultiplierH": 1.9,
+    "evolvesTo": "Venomoth"
+  },
+  {
+    "name": "Diglett",
+    "evoMultiplierL": 2.68,
+    "evoMultiplierH": 2.77,
+    "evolvesTo": "Dugtrio"
+  },
+  {
+    "name": "Meowth",
+    "evoMultiplierL": 1.98,
+    "evoMultiplierH": 2.24,
+    "evolvesTo": "Persian"
+  },
+  {
+    "name": "Psyduck",
+    "evoMultiplierL": 2.22,
+    "evoMultiplierH": 2.29,
+    "evolvesTo": "Golduck"
+  },
+  {
+    "name": "Mankey",
+    "evoMultiplierL": 2.17,
+    "evoMultiplierH": 2.28,
+    "evolvesTo": "Pimeape"
+  },
+  {
+    "name": "Growlithe",
+    "evoMultiplierL": 2.31,
+    "evoMultiplierH": 2.36,
+    "evolvesTo": "Arcanine"
+  },
+  {
+    "name": "Poliwag",
+    "evoMultiplierL": 1.72,
+    "evoMultiplierH": 1.73,
+    "evolvesTo": "Poliwhirl"
+  },
+  {
+    "name": "Poliwhirl",
+    "evoMultiplierL": 1.9,
+    "evoMultiplierH": 1.96,
+    "evolvesTo": "Poliwrath"
+  },
+  {
+    "name": "Abra",
+    "evoMultiplierL": 1.36,
+    "evoMultiplierH": 1.95,
+    "evolvesTo": "Kadabra"
+  },
+  {
+    "name": "Kadabra",
+    "evoMultiplierL": 1.4,
+    "evoMultiplierH": 1.65,
+    "evolvesTo": "Alakazam"
+  },
+  {
+    "name": "Machop",
+    "evoMultiplierL": 1.62,
+    "evoMultiplierH": 1.67,
+    "evolvesTo": "Machoke"
+  },
+  {
+    "name": "Machoke",
+    "evoMultiplierL": 1.48,
+    "evoMultiplierH": 1.7,
+    "evolvesTo": "Machamp"
+  },
+  {
+    "name": "Bellsprout",
+    "evoMultiplierL": 1.54,
+    "evoMultiplierH": 1.6,
+    "evolvesTo": "Weepinbell"
+  },
+  {
+    "name": "Weepinbell",
+    "evoMultiplierL": 1.47,
+    "evoMultiplierH": 1.59,
+    "evolvesTo": "Victreebell"
+  },
+  {
+    "name": "Tentacool",
+    "evoMultiplierL": 2.47,
+    "evoMultiplierH": 2.6,
+    "evolvesTo": "Tentacruel"
+  },
+  {
+    "name": "Geodude",
+    "evoMultiplierL": 1.75,
+    "evoMultiplierH": 1.76,
+    "evolvesTo": "Graveler"
+  },
+  {
+    "name": "Graveler",
+    "evoMultiplierL": 1.64,
+    "evoMultiplierH": 1.72,
+    "evolvesTo": "Golem"
+  },
+  {
+    "name": "Ponyta",
+    "evoMultiplierL": 1.48,
+    "evoMultiplierH": 1.5,
+    "evolvesTo": "Rapidash"
+  },
+  {
+    "name": "Slowpoke",
+    "evoMultiplierL": 2.19,
+    "evoMultiplierH": 2.26,
+    "evolvesTo": "Slowbro"
+  },
+  {
+    "name": "Magnemite",
+    "evoMultiplierL": 2.16,
+    "evoMultiplierH": 2.17,
+    "evolvesTo": "Magneton"
+  },
+  {
+    "name": "Doduo",
+    "evoMultiplierL": 2.19,
+    "evoMultiplierH": 2.24,
+    "evolvesTo": "Dodrio"
+  },
+  {
+    "name": "Seel",
+    "evoMultiplierL": 1.04,
+    "evoMultiplierH": 1.96,
+    "evolvesTo": "Dewgong"
+  },
+  {
+    "name": "Grimer",
+    "evoMultiplierL": 2.01,
+    "evoMultiplierH": 2.44,
+    "evolvesTo": "Muk"
+  },
+  {
+    "name": "Shellder",
+    "evoMultiplierL": 2.62,
+    "evoMultiplierH": 2.65,
+    "evolvesTo": "Cloyster"
+  },
+  {
+    "name": "Gastly",
+    "evoMultiplierL": 1.75,
+    "evoMultiplierH": 1.83,
+    "evolvesTo": "Haunter"
+  },
+  {
+    "name": "Haunter",
+    "evoMultiplierL": 1.56,
+    "evoMultiplierH": 1.8,
+    "evolvesTo": "Gengar"
+  },
+  {
+    "name": "Drowzee",
+    "evoMultiplierL": 2.08,
+    "evoMultiplierH": 2.09,
+    "evolvesTo": "Hypno"
+  },
+  {
+    "name": "Krabby",
+    "evoMultiplierL": 2.36,
+    "evoMultiplierH": 2.4,
+    "evolvesTo": "Kingler"
+  },
+  {
+    "name": "Voltorb",
+    "evoMultiplierL": 2.01,
+    "evoMultiplierH": 2.02,
+    "evolvesTo": "Electrode"
+  },
+  {
+    "name": "Exeggcute",
+    "evoMultiplierL": 2.7,
+    "evoMultiplierH": 3.18,
+    "evolvesTo": "Exeggutor"
+  },
+  {
+    "name": "Cubone",
+    "evoMultiplierL": 1.65,
+    "evoMultiplierH": 1.67,
+    "evolvesTo": "Marowak"
+  },
+  {
+    "name": "Koffing",
+    "evoMultiplierL": 1.95,
+    "evoMultiplierH": 2.03,
+    "evolvesTo": "Weezing"
+  },
+  {
+    "name": "Rhyhorn",
+    "evoMultiplierL": 1.9,
+    "evoMultiplierH": 1.91,
+    "evolvesTo": "Rhydon"
+  },
+  {
+    "name": "Horsea",
+    "evoMultiplierL": 2.19,
+    "evoMultiplierH": 2.23,
+    "evolvesTo": "Seadra"
+  },
+  {
+    "name": "Goldeen",
+    "evoMultiplierL": 2.14,
+    "evoMultiplierH": 2.24,
+    "evolvesTo": "Seaking"
+  },
+  {
+    "name": "Staryu",
+    "evoMultiplierL": 2.38,
+    "evoMultiplierH": 2.41,
+    "evolvesTo": "Starmie"
+  },
+  {
+    "name": "Magikarp",
+    "evoMultiplierL": 10.1,
+    "evoMultiplierH": 11.8,
+    "evolvesTo": "Gyarados"
+  },
+  {
+    "name": "Eevee (Vaporeon)",
+    "evoMultiplierL": 2.63,
+    "evoMultiplierH": 2.64,
+    "evolvesTo": "Vaporeon"
+  },
+  {
+    "name": "Eevee (Jolteon)",
+    "evoMultiplierL": 2.02,
+    "evoMultiplierH": 2.1,
+    "evolvesTo": "Jolteon"
+  },
+  {
+    "name": "Eevee (Flareon)",
+    "evoMultiplierL": 2.47,
+    "evoMultiplierH": 2.48,
+    "evolvesTo": "Flareon"
+  },
+  {
+    "name": "Eevee",
+    "evoMultiplierL": [2.63, 2.02, 2.47],
+    "evoMultiplierH": [2.64, 2.1, 2.48],
+    "evolvesTo": ["Vaporeon", "Jolteon", "Flareon"]
+  },
+  {
+    "name": "Omanyte",
+    "evoMultiplierL": 1.99,
+    "evoMultiplierH": 2.12,
+    "evolvesTo": "Omastar"
+  },
+  {
+    "name": "Kabuto",
+    "evoMultiplierL": 1.97,
+    "evoMultiplierH": 2.37,
+    "evolvesTo": "Kabutops"
+  },
+  {
+    "name": "Dratini",
+    "evoMultiplierL": 1.79,
+    "evoMultiplierH": 1.87,
+    "evolvesTo": "Dragonair"
+  },
+  {
+    "name": "Dragonair",
+    "evoMultiplierL": 2.01,
+    "evoMultiplierH": 2.09,
+    "evolvesTo": "Dragonite"
+  }
+];
 
 var levelsArray = [
   {"level": 1, "starDust": 200, "candy": 1},
@@ -148,427 +631,4 @@ var levelsArray = [
   {"level": 78, "starDust": 10000, "candy": 15},
   {"level": 79, "starDust": 10000, "candy": 15},
   {"level": 80, "starDust": 10000, "candy": 15}
-];
-
-var pokemonArray = [
-  {
-    "id": 1,
-    "name": "Bulbasaur",
-    "evoMultiplier": 1.565,
-    "evolvesTo": "Ivysaur"
-  },
-  {
-    "id": 2,
-    "name": "Ivysaur",
-    "evoMultiplier": 1.611,
-    "evolvesTo": "Venusaur"
-  },
-  {
-    "id": 4,
-    "name": "Charmander",
-    "evoMultiplier": 1.68,
-    "evolvesTo": "Charmeleon"
-  },
-  {
-    "id": 5,
-    "name": "Charmeleon",
-    "evoMultiplier": 1.712,
-    "evolvesTo": "Charizard"
-  },
-  {
-    "id": 7,
-    "name": "Squirtle",
-    "evoMultiplier": 1.608,
-    "evolvesTo": "Wartortle"
-  },
-  {
-    "id": 8,
-    "name": "Wartortle",
-    "evoMultiplier": 1.641,
-    "evolvesTo": "Blastoise"
-  },
-  {
-    "id": 10,
-    "name": "Caterpie",
-    "evoMultiplier": 1.094,
-    "evolvesTo": "Metapod"
-  },
-  {
-    "id": 11,
-    "name": "Metapod",
-    "evoMultiplier": 3.293,
-    "evolvesTo": "Butterfree"
-  },
-  {
-    "id": 13,
-    "name": "Weedle",
-    "evoMultiplier": 1.093,
-    "evolvesTo": "Kakuna"
-  },
-  {
-    "id": 14,
-    "name": "Kakuna",
-    "evoMultiplier": 3.203,
-    "evolvesTo": "Beedrill"
-  },
-  {
-    "id": 16,
-    "name": "Pigey",
-    "evoMultiplier": 1.882,
-    "evolvesTo": "Pigeotto"
-  },
-  {
-    "id": 17,
-    "name": "Pigeotto",
-    "evoMultiplier": 1.75,
-    "evolvesTo": "Pigeot"
-  },
-  {
-    "id": 19,
-    "name": "Rattata",
-    "evoMultiplier": 2.639,
-    "evolvesTo": "Raticate"
-  },
-  {
-    "id": 21,
-    "name": "Spearow",
-    "evoMultiplier": 2.698,
-    "evolvesTo": "Fearow"
-  },
-  {
-    "id": 23,
-    "name": "Ekans",
-    "evoMultiplier": 2.238,
-    "evolvesTo": "Arbok"
-  },
-  {
-    "id": 25,
-    "name": "Pikachu",
-    "evoMultiplier": 2.398,
-    "evolvesTo": "Raichu"
-  },
-  {
-    "id": 27,
-    "name": "Sandshrew",
-    "evoMultiplier": 2.386,
-    "evolvesTo": "Sandslash"
-  },
-  {
-    "id": 29,
-    "name": "Nidoran F",
-    "evoMultiplier": 1.643,
-    "evolvesTo": "Nidorina"
-  },
-  {
-    "id": 30,
-    "name": "Nidorina",
-    "evoMultiplier": 1.821,
-    "evolvesTo": "Nidoqueen"
-  },
-  {
-    "id": 32,
-    "name": "Nidoran M",
-    "evoMultiplier": 1.682,
-    "evolvesTo": "Nidorino"
-  },
-  {
-    "id": 33,
-    "name": "Nidorino",
-    "evoMultiplier": 1.85,
-    "evolvesTo": "Nidoking"
-  },
-  {
-    "id": 35,
-    "name": "Clefairy",
-    "evoMultiplier": 2.071,
-    "evolvesTo": "Clefable"
-  },
-  {
-    "id": 37,
-    "name": "Vulpix",
-    "evoMultiplier": 2.764,
-    "evolvesTo": "Ninetails"
-  },
-  {
-    "id": 39,
-    "name": "Jigglypuff",
-    "evoMultiplier": 2.509,
-    "evolvesTo": "Wigglytuff"
-  },
-  {
-    "id": 41,
-    "name": "Zubat",
-    "evoMultiplier": 3.2,
-    "evolvesTo": "Golbat"
-  },
-  {
-    "id": 43,
-    "name": "Oddish",
-    "evoMultiplier": 1.503,
-    "evolvesTo": "Gloom"
-  },
-  {
-    "id": 44,
-    "name": "Gloom",
-    "evoMultiplier": 1.5,
-    "evolvesTo": "Vileplume"
-  },
-  {
-    "id": 46,
-    "name": "Paras",
-    "evoMultiplier": 1.983,
-    "evolvesTo": "Parasect"
-  },
-  {
-    "id": 48,
-    "name": "Venonat",
-    "evoMultiplier": 1.895,
-    "evolvesTo": "Venomoth"
-  },
-  {
-    "id": 50,
-    "name": "Diglett",
-    "evoMultiplier": 2.849,
-    "evolvesTo": "Dugtrio"
-  },
-  {
-    "id": 52,
-    "name": "Meowth",
-    "evoMultiplier": 2.25,
-    "evolvesTo": "Persian"
-  },
-  {
-    "id": 54,
-    "name": "Psyduck",
-    "evoMultiplier": 2.229,
-    "evolvesTo": "Golduck"
-  },
-  {
-    "id": 56,
-    "name": "Mankey",
-    "evoMultiplier": 2.214,
-    "evolvesTo": "Pimeape"
-  },
-  {
-    "id": 58,
-    "name": "Growlithe",
-    "evoMultiplier": 2.314,
-    "evolvesTo": "Arcanine"
-  },
-  {
-    "id": 60,
-    "name": "Poliwag",
-    "evoMultiplier": 1.743,
-    "evolvesTo": "Poliwhirl"
-  },
-  {
-    "id": 61,
-    "name": "Poliwhirl",
-    "evoMultiplier": 1.92,
-    "evolvesTo": "Poliwrath"
-  },
-  {
-    "id": 63,
-    "name": "Abra",
-    "evoMultiplier": 1.973,
-    "evolvesTo": "Kadabra"
-  },
-  {
-    "id": 64,
-    "name": "Kadabra",
-    "evoMultiplier": 1.651,
-    "evolvesTo": "Alakazam"
-  },
-  {
-    "id": 66,
-    "name": "Machop",
-    "evoMultiplier": 1.66,
-    "evolvesTo": "Machoke"
-  },
-  {
-    "id": 67,
-    "name": "Machoke",
-    "evoMultiplier": 1.496,
-    "evolvesTo": "Machamp"
-  },
-  {
-    "id": 69,
-    "name": "Bellspout",
-    "evoMultiplier": 1.583,
-    "evolvesTo": "Weepinbell"
-  },
-  {
-    "id": 70,
-    "name": "Weepinbell",
-    "evoMultiplier": 1.496,
-    "evolvesTo": "Victreebell"
-  },
-  {
-    "id": 72,
-    "name": "Tentacool",
-    "evoMultiplier": 2.569,
-    "evolvesTo": "Tentacruel"
-  },
-  {
-    "id": 74,
-    "name": "Geodude",
-    "evoMultiplier": 1.741,
-    "evolvesTo": "Graveler"
-  },
-  {
-    "id": 75,
-    "name": "Graveler",
-    "evoMultiplier": 1.644,
-    "evolvesTo": "Golem"
-  },
-  {
-    "id": 77,
-    "name": "Ponyta",
-    "evoMultiplier": 1.475,
-    "evolvesTo": "Rapidash"
-  },
-  {
-    "id": 79,
-    "name": "Slowpoke",
-    "evoMultiplier": 2.208,
-    "evolvesTo": "Slowbro"
-  },
-  {
-    "id": 81,
-    "name": "Magnemite",
-    "evoMultiplier": 2.212,
-    "evolvesTo": "Magneton"
-  },
-  {
-    "id": 84,
-    "name": "Doduo",
-    "evoMultiplier": 2.239,
-    "evolvesTo": "Dodrio"
-  },
-  {
-    "id": 86,
-    "name": "Seel",
-    "evoMultiplier": 2.007,
-    "evolvesTo": "Dewgong"
-  },
-  {
-    "id": 88,
-    "name": "Grimer",
-    "evoMultiplier": 2.089,
-    "evolvesTo": "Muk"
-  },
-  {
-    "id": 90,
-    "name": "Shellder",
-    "evoMultiplier": 2.635,
-    "evolvesTo": "Cloyster"
-  },
-  {
-    "id": 92,
-    "name": "Gastly",
-    "evoMultiplier": 1.782,
-    "evolvesTo": "Haunter"
-  },
-  {
-    "id": 93,
-    "name": "Haunter",
-    "evoMultiplier": 1.544,
-    "evolvesTo": "Gengar"
-  },
-  {
-    "id": 96,
-    "name": "Drowzee",
-    "evoMultiplier": 2.108,
-    "evolvesTo": "Hypno"
-  },
-  {
-    "id": 98,
-    "name": "Krabby",
-    "evoMultiplier": 2.42,
-    "evolvesTo": "Kingler"
-  },
-  {
-    "id": 100,
-    "name": "Voltorb",
-    "evoMultiplier": 2.037,
-    "evolvesTo": "Electrode"
-  },
-  {
-    "id": 102,
-    "name": "Exeggcute",
-    "evoMultiplier": 2.824,
-    "evolvesTo": "Exeggutor"
-  },
-  {
-    "id": 104,
-    "name": "Cubone",
-    "evoMultiplier": 1.685,
-    "evolvesTo": "Marowak"
-  },
-  {
-    "id": 109,
-    "name": "Koffing",
-    "evoMultiplier": 2.027,
-    "evolvesTo": "Weezing"
-  },
-  {
-    "id": 111,
-    "name": "Rhyhorn",
-    "evoMultiplier": 1.955,
-    "evolvesTo": "Rhydon"
-  },
-  {
-    "id": 116,
-    "name": "Horsea",
-    "evoMultiplier": 2.27,
-    "evolvesTo": "Seadra"
-  },
-  {
-    "id": 118,
-    "name": "Goldeen",
-    "evoMultiplier": 2.202,
-    "evolvesTo": "Seaking"
-  },
-  {
-    "id": 120,
-    "name": "Staryu",
-    "evoMultiplier": 2.433,
-    "evolvesTo": "Starmie"
-  },
-  {
-    "id": 129,
-    "name": "Magikarp",
-    "evoMultiplier": 11.489,
-    "evolvesTo": "Gyarados"
-  },
-  {
-    "id": 133,
-    "name": "Eevee",
-    "evoMultiplier": "",
-    "evolvesTo": "Jolteon, Flareon, Vaporeon"
-  },
-  {
-    "id": 138,
-    "name": "Omanyte",
-    "evoMultiplier": 2.083,
-    "evolvesTo": "Omastar"
-  },
-  {
-    "id": 140,
-    "name": "Kabuto",
-    "evoMultiplier": 2.007,
-    "evolvesTo": "Kabutops"
-  },
-  {
-    "id": 147,
-    "name": "Dratini",
-    "evoMultiplier": 1.841,
-    "evolvesTo": "Dragonair"
-  },
-  {
-    "id": 148,
-    "name": "Dragonair",
-    "evoMultiplier": 2.056,
-    "evolvesTo": "Dragonite"
-  }
 ];
